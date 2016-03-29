@@ -1,7 +1,6 @@
 require 'socket'
 
 module Ntp
-
   class Server
     attr_accessor :server, :port
 
@@ -11,7 +10,7 @@ module Ntp
 
     # runs the server
     def start
-        reset
+      reset
     end
 
     # stops the server
@@ -20,16 +19,17 @@ module Ntp
 
     # sets a new time for the NTP server to base future responses
     def change_time(new_time)
-        @time = new_time
+      @time = new_time
     end
 
     # sets the time to current time to base future responses
     def reset
-        @time = Time.now
+      @time = Time.now
     end
 
-    def get_time
-        @time
-    end
+    # only used for practing the cukes
+    # def get_time
+    #   @time
+    # end
   end
 end

@@ -18,7 +18,7 @@ When(/^I change the time to '(\d+)\/(\d+)\/(\d+)T(\d+):(\d+):(\d+)'$/) do |year,
   @server.change_time(@new_time)
 end
 
-Then(/^the time is near to '(\d+)\/(\d+)\/(\d+)T(\d+):(\d+):(\d+)'$/) do |year, month, day, hour, minute, second|
+Then(/^the time is near to '(\d+)\/(\d+)\/(\d+)T(\d+):(\d+):(\d+)'$/) do |_year, _month, _day, _hour, _minute, _second|
   expect(time_diff(@time, @new_time)).to be < 1
 end
 

@@ -4,11 +4,13 @@ end
 
 When(/^I request the time from it$/) do
   Net::NTP.get('localhost', SERVER_PORT)
-  @time = Net::NTP.get.time
+  @time = Net::NTP.get.time.to_f
+  # This is just to test the cuke scenario
+  # @time = @server.get_time.to_f
 end
 
 Then(/^the time is near to now$/) do
-  expect(@time).to eq(Time.now)
+  expect(time_diff(@time, Time.now)).to be < 1
 end
 
 When(/^I change the time to '(\d+)\/(\d+)\/(\d+)T(\d+):(\d+):(\d+)'$/) do |year, month, day, hour, minute, second|
@@ -17,9 +19,13 @@ When(/^I change the time to '(\d+)\/(\d+)\/(\d+)T(\d+):(\d+):(\d+)'$/) do |year,
 end
 
 Then(/^the time is near to '(\d+)\/(\d+)\/(\d+)T(\d+):(\d+):(\d+)'$/) do |year, month, day, hour, minute, second|
-  expect(@time).to eq(@new_time)
+  expect(time_diff(@time, @new_time)).to be < 1
 end
 
 When(/^I reset it$/) do
   @server.reset
+end
+
+def time_diff(time_a, time_b)
+  time_a.to_f - time_b.to_f
 end

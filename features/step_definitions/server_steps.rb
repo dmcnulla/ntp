@@ -13,8 +13,13 @@ end
 
 When(/^I change the time to '(\d+)\/(\d+)\/(\d+)T(\d+):(\d+):(\d+)'$/) do |year, month, day, hour, minute, second|
   @new_time = Time.new(year.to_i, month.to_i, day.to_i, hour.to_i, minute.to_i, second.to_i)
+  @server.change_time(@new_time)
 end
 
 Then(/^the time is near to '(\d+)\/(\d+)\/(\d+)T(\d+):(\d+):(\d+)'$/) do |year, month, day, hour, minute, second|
   expect(@time).to eq(@new_time)
+end
+
+When(/^I reset it$/) do
+  @server.reset
 end

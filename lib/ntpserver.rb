@@ -1,6 +1,4 @@
 require 'socket'
-require_relative 'constants.rb'
-# require_relative 'ntpresponse.rb'
 
 module Ntp
 

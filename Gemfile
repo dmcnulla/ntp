@@ -1,4 +1,11 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in yamllint.gemspec
-gemspec
+group :development do
+  gem 'bundler'
+  gem 'net-ntp'
+  gem 'rake'
+  gem 'cucumber'
+  gem 'rspec'
+  gem 'rubocop'
+end
+

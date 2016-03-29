@@ -1,35 +1,12 @@
+require 'bundler/gem_tasks'
 require 'rubygems'
-require 'rake'
-require 'rake/testtask'
+require 'cucumber'
+require 'cucumber/rake/task'
 
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/*_test.rb'
-  test.verbose = true
+Cucumber::Rake::Task.new(:features) do |t|
+  t.profile = 'default'
 end
 
-task :default => :test
+Coveralls::RakeTask.new
 
-require 'rdoc/task'
-require 'net/ntp/version'
-
-Rake::RDocTask.new do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "net-ntp #{Net::NTP::VERSION}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
-
-begin
-  require 'rcov/rcovtask'
-  Rcov::RcovTask.new do |test|
-    test.libs << 'test'
-    test.pattern = 'test/**/*_test.rb'
-    test.verbose = true
-    test.rcov_opts << '--exclude "gems/*"'
-  end
-rescue LoadError
-  task :rcov do
-    abort "RCov is not available. In order to run rcov, you must: sudo gem install rcov"
-  end
-end
+task default: [:features]

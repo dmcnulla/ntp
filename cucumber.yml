@@ -1,0 +1,4 @@
+default: --tags ~@wip --no-source --color --format pretty
+debug: --color --format pretty
+report: --no-source --color --format progress --format html --out='features_<%= Time.new.strftime('%Y-%m-%d_%H_%M_%S') %>.html'
+wip: --tags @wip --color --format pretty

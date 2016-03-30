@@ -1,0 +1,7 @@
+.rvmrc
+.bundle/
+html/
+Gemfile.lock
+
+*~
+*.sw*

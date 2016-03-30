@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+require 'bundler'
+require 'ntpserver'
+require 'pry'
+
+server = Ntp::Server.new(17890)
+
+def usage
+   puts "Usage: ntp-mock-server [start|stop|restart|status|time <time>|reset]"
+end
+
+case ARGV[0]
+when 'start'
+   server.start
+when 'stop'
+   server.stop
+when 'restart'
+   server.stop
+   server.start
+when 'time'
+   if ARGV[1]
+      server.changetime Time.parse(ARGV[1])
+   else
+      usage
+   end
+when 'reset'
+   server.reset
+when 'status'
+   server.status
+else
+   usage
+end

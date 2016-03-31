@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'eventmachine'
+gem 'ruby-fifo', github: 'shurizzle/ruby-fifo'
+gem 'mkfifo'
 
 group :development do
   gem 'pry'

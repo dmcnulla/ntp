@@ -36,12 +36,6 @@ module Handler
             ::Time.at( t )
          end
 
-#         def self.parse time
-#            times = @time.unpack( "N10 B32" )
-#            t = ( times[ 0 ] - Net::NTP::NTP_ADJ ).to_f + bin2frac( times[ 1 ] )
-#            Time.at( t )
-#         end
-
          private
 
          def bin2frac(bin) #:nodoc:
@@ -171,7 +165,6 @@ module Handler
 
          def send &block
             data = self.compile
-            transmit_timestamp = NTP::Time.new
             yield "#{data[1..40]}#{transmit_timestamp.timestamp}"
          end
 
@@ -217,7 +210,7 @@ module Handler
       end
    end
 
-   def make_response request, receive_time, base_time
+   def make_response request, receive_time
       response = NTP::Response.new
       response.leap_indicator = 'no warning'
       response.version_number = request.version_number
@@ -228,18 +221,46 @@ module Handler
       response.root_delay = request.timestamp.time - receive_time
       response.root_dispersion = NTP::Time.new(0)
       response.reference_clock_identifier = '127.0.0.1'
-      response.reference_timestamp = ::Time.now
-      response.originate_timestamp = request.timestamp
-      response.receive_timestamp = receive_time
-      response.transmit_timestamp = ::Time.now
+      Kernel.puts ::Time.now + Handler.gap
+      response.reference_timestamp = ::Time.now + Handler.gap
+      response.originate_timestamp = request.timestamp.time + Handler.gap
+      response.receive_timestamp = receive_time + Handler.gap
+      response.transmit_timestamp = ::Time.now + Handler.gap
+      Kernel.puts response.inspect
       response
    end
 
    def receive_data data
       receive_time = ::Time.now
+      update_gap
       request = NTP::Request.parse( data )
       Kernel.puts request.inspect
-      response = make_response( request, receive_time, Time.at(0) )
-      response.send { |data| send_data( data ) }
+      response = make_response( request, receive_time )
+      response.send { |data| 
+      Kernel.puts data.unpack("C*").map{|x| sprintf "%.2x", x}.join
+         send_data( data )
+      }
+   end
+
+   def update_gap
+      data = Handler.reader.read_nonblock(1024)
+      Handler.gap = data.to_f
+   rescue IO::EAGAINWaitReadable
+   end
+
+   def self.reader
+      @@reader
+   end
+
+   def self.reader= reader
+      @@reader = reader
+   end
+
+   def self.gap= gap
+      @@gap = gap
+   end
+
+   def self.gap
+      @@gap
    end
 end

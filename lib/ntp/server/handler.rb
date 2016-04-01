@@ -15,10 +15,10 @@ module NTP::Server::Handler
       response.originate_timestamp = self.handler.origin_time
       response.receive_timestamp = receive_time + self.handler.gap
       response.transmit_timestamp = time
-      Kernel.puts response.reference_timestamp.seconds
-      Kernel.puts response.originate_timestamp.seconds
-      Kernel.puts response.receive_timestamp.seconds
-      Kernel.puts response.transmit_timestamp.seconds
+      # Kernel.puts response.reference_timestamp.seconds
+      # Kernel.puts response.originate_timestamp.seconds
+      # Kernel.puts response.receive_timestamp.seconds
+      # Kernel.puts response.transmit_timestamp.seconds
       # Kernel.puts response.inspect
       response
    end

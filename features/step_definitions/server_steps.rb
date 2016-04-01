@@ -3,8 +3,8 @@ Given(/^I have an NTP service that is running on localhost$/) do
 end
 
 When(/^I request the time from it$/) do
-  Net::NTP.get('localhost', SERVER_PORT)
-  @time = Net::NTP.get.time.to_f
+  @time = Net::NTP.get('localhost', SERVER_PORT).time
+#  @time = Net::NTP.get.time.to_f
   # This is just to test the cuke scenario
   # @time = @server.get_time.to_f
 end
@@ -15,7 +15,8 @@ end
 
 When(/^I change the time to '(\d+)\/(\d+)\/(\d+)T(\d+):(\d+):(\d+)'$/) do |year, month, day, hour, minute, second|
   @new_time = Time.new(year.to_i, month.to_i, day.to_i, hour.to_i, minute.to_i, second.to_i)
-  @server.change_time(@new_time)
+  @server.time(@new_time)
+  @server.status
 end
 
 Then(/^the time is near to '(\d+)\/(\d+)\/(\d+)T(\d+):(\d+):(\d+)'$/) do |_year, _month, _day, _hour, _minute, _second|
@@ -24,6 +25,7 @@ end
 
 When(/^I reset it$/) do
   @server.reset
+  @server.status
 end
 
 def time_diff(time_a, time_b)

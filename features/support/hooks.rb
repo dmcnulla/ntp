@@ -1,6 +1,6 @@
 Before do |scenario|
-  @server = Ntp::Server.new(SERVER_PORT)
-  @server.start
+  @server = NTP::Server::Control.new
+  @server.start(SERVER_PORT)
 end
 
 After do |scenario|

@@ -1,92 +1,25 @@
 #!/usr/bin/env ruby
 
-require 'bundler'
-require 'ntpserver'
-require 'ruby-fifo'
-require 'pry'
+require 'ntp'
 
-def read client_in, timeout = 1
-   begin
-      Timeout::timeout(timeout) { client_in.gets }
-   rescue Timeout::Error
-   end
-end
+control = NTP::Server::Control.new
 
-client_out = Fifo.new('ntp-mock-server-in', :w, :nowait)
-client_in = Fifo.new('ntp-mock-server-out', :r, :nowait)
-
-usage = proc do
-   puts "Usage: ntp-mock-server [start|stop|restart|status|time <time>|reset]"
-end
-
-status = proc do
-   client_out.puts('status')
-   status = read(client_in)
-   puts (status || "not running")
-   status
-end
-
-start = proc do
-   fork do
-      Process.setsid
-      NTP::Server.new(17890).start
-   end
-   puts read(client_in, 5)
-end
-
-stop = proc do
-   client_out.puts('stop')
-
-   s = true
-   begin
-      Timeout::timeout(5) do
-         while s do
-            client_out.puts('status')
-            s = read(client_in)
-         end
-      end
-   rescue Timeout::Error
-   end
-
-   if s
-      puts "failed to stop: status #{s}"
-   else
-      puts "stopped"
-      true
-   end
-end
-
-restart = proc do
-   if stop[]
-      start[]
-   end
-end
-
-time = proc do
-   if ARGV[1]
-      client_out.puts("time #{Time.parse(ARGV[1])}")
-   else
-      usage[]
-   end
-end
-
-reset = proc do
-   client_out.puts('reset')
-end
-
+line =
 case ARGV[0]
 when 'start'
-   start[]
+   control.start ARGV[1]
 when 'stop'
-   stop[]
+   control.stop
 when 'restart'
-   restart[]
+   control.restart
 when 'time'
-   time[]
+   control.time ARGV[1]
 when 'reset'
-   reset[]
+   control.reset
 when 'status'
-   status[]
+   control.status
 else
-   usage[]
+   control.usage
 end
+
+puts line

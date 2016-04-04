@@ -9,7 +9,7 @@ class NTP::Server::Control
    end
 
    def status
-      @client_out.puts('status')
+      send_command('status')
       status = read(@client_in)
       status || "not running"
    end
@@ -23,13 +23,13 @@ class NTP::Server::Control
    end
 
    def stop
-      @client_out.puts('stop')
+      send_command('stop')
 
       s = true
       begin
          Timeout::timeout(5) do
             while s do
-               @client_out.puts('status')
+               send_command('status')
                s = read(@client_in)
             end
          end
@@ -48,14 +48,19 @@ class NTP::Server::Control
    end
 
    def time time
-      @client_out.puts("time #{time}")
+      send_command("time #{time}")
    end
 
    def reset
-      @client_out.puts('reset')
+      send_command('reset')
    end
 
    private
+
+   def send_command data
+      @client_out.puts data
+      @client_out.to_io.sync
+   end
 
    def read client_in, timeout = 1
       begin

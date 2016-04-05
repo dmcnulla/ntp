@@ -1,1 +1,4 @@
 * Add answer from handler when the time is changed exactly.
+* Add sinatra test code to env.rb & hooks
+* Complete steps for admin host
+* Complete code for admin host interface in sinatra

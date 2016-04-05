@@ -18,7 +18,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install flickr_oblak
+    $ gem install ntp-mock-server
 
 Add to your script:
 

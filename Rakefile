@@ -7,6 +7,6 @@ Cucumber::Rake::Task.new(:features) do |t|
   t.profile = 'default'
 end
 
-Coveralls::RakeTask.new
+# Coveralls::RakeTask.new
 
 task default: [:features]

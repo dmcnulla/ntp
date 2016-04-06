@@ -13,6 +13,8 @@ group :development do
   gem 'rake'
   gem 'cucumber'
   gem 'rspec'
+  gem 'coveralls'
+  gem 'simplecov'  
   gem 'rubocop'
 end
 

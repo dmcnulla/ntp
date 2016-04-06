@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'rspec/expectations'
 require 'cucumber/rspec/doubles'
+require 'coveralls'
+require 'simplecov'
 require 'net/ntp'
 require 'pry'
 

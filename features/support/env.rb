@@ -1,9 +1,19 @@
 require 'rubygems'
 require 'rspec/expectations'
 require 'cucumber/rspec/doubles'
+require 'coveralls'
+require 'simplecov'
 require 'net/ntp'
-require 'ntp'
 require 'pry'
 
-SERVER_PORT = 1234
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+  SimpleCov::Formatter::HTMLFormatter,
+  Coveralls::SimpleCov::Formatter
+]
+SimpleCov.start do
+  add_filter 'features'
+end
 
+require 'ntp'
+
+SERVER_PORT = 55555

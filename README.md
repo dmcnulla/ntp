@@ -1,5 +1,6 @@
 # NTP Mock Server
 
+[![Build Status](https://travis-ci.org/dmcnulla/ntp.svg?branch=master)](https://travis-ci.org/dmcnulla/ntp)
 [![Dependency Status](https://gemnasium.com/majioa/ntp-mock-server.png)](https://gemnasium.com/majioa/ntp-mock-server)
 [![Gem Version](https://badge.fury.io/rb/ntp-mock-server.png)](http://rubygems.org/gems/ntp-mock-server)
 

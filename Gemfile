@@ -7,5 +7,7 @@ gem 'sinatra'
 
 group :development do
   gem 'rspec'
+  gem 'coveralls'
+  gem 'simplecov'  
   gem 'rubocop'
 end

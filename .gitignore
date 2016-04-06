@@ -1,5 +1,6 @@
 .rvmrc
 .bundle/
+pkg/
 html/
 Gemfile.lock
 

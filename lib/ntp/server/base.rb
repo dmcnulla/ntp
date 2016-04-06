@@ -16,7 +16,6 @@ class NTP::Server::Base
 
    # runs the server
    def start
-      # puts "################"
       self.pid = fork do
         self.gap_writer.close
         self.handler.reader = self.gap_reader
@@ -29,14 +28,17 @@ class NTP::Server::Base
       process_queue
    end
 
+   # returns handler constant
    def handler
        NTP::Server::Handler
    end
 
    private
 
+   # enters to the processing queue loop
    def process_queue
       while true
+         self.pipe_in.to_io.sync
          message = self.pipe_in.gets
          # puts message
          case message
@@ -61,20 +63,17 @@ class NTP::Server::Base
    def stop
       Process.kill("HUP", self.pid)
       Process.wait2
-      # puts "$$$$$$$$$$$$$$$$"
       Process.exit(true)
    end
 
    # sets a new time for the NTP server to base future responses
    def change_time(new_time)
       send_gap(new_time.utc - Time.now.utc)
-      # puts "Set time base to #{new_time.utc}..."
    end
 
    # sets the time to current time to base future responses
    def reset
       send_gap(0)
-      # puts "Reset time base..."
    end
 
    def status
@@ -86,9 +85,14 @@ class NTP::Server::Base
    end
 
    def send_gap gap
-      self.gap_writer.puts(gap)
+      begin
+         self.gap_writer.puts(gap)
+      rescue Errno::EPIPE
+         # TODO check and restore child server part
+      end
       self.gap_writer.sync
       Process.kill("USR1", self.pid)
+      Process.setpriority(Process::PRIO_PROCESS, self.pid, 19)
    end
 
    # only used for practing the cukes

@@ -31,7 +31,8 @@ Gem::Specification.new do |s|
    s.add_development_dependency 'rspec', '~> 3.4.0'
    s.add_development_dependency 'coveralls', '~> 0.8.13'
    s.add_development_dependency 'simplecov', '~> 0.11.2'
-   s.add_development_dependency 'rubocop', '~> 0.37.2'
+   s.add_development_dependency 'rubocop', '~> 0.39.0'
+
 
    s.add_dependency 'eventmachine', '~> 1.2.0'
    s.add_dependency 'ruby-fifo', '~> 0.1.0'

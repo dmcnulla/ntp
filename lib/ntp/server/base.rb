@@ -2,14 +2,15 @@ require 'eventmachine'
 
 class NTP::Server::Base
    attr_accessor :host, :port, :pipe_in, :pipe_out, :pid,
-       :gap_reader, :gap_writer
+       :command_reader, :command_writer, :answer_reader, :answer_writer
 
    def initialize(port = 123)
-      self.pipe_in = Fifo.new('ntp-mock-server-in', :r, :nowait)
-      self.pipe_out = Fifo.new('ntp-mock-server-out', :w, :nowait)
+      self.pipe_in = Fifo.new(Dir.tmpdir + '/ntp-mock-server-in', :r, :nowait)
+      self.pipe_out = Fifo.new(Dir.tmpdir + '/ntp-mock-server-out', :w, :nowait)
       self.host = 'localhost'
       self.port = port
-      (self.gap_reader, self.gap_writer) = IO.pipe
+      (self.command_reader, self.command_writer) = IO.pipe
+      (self.answer_reader, self.answer_writer) = IO.pipe
       handler.origin_time = Time.now
       handler.gap = 0
    end
@@ -17,13 +18,16 @@ class NTP::Server::Base
    # runs the server
    def start
       self.pid = fork do
-        self.gap_writer.close
-        self.handler.reader = self.gap_reader
+        self.command_writer.close
+        self.answer_reader.close
+        self.handler.reader = self.command_reader
+        self.handler.writer = self.answer_writer
         EventMachine::run do
           EventMachine::open_datagram_socket self.host, self.port, self.handler
         end
       end
-      self.gap_reader.close
+      self.command_reader.close
+      self.answer_writer.close
       self.pipe_out.puts "started NTP mock server on #{host}:#{port}."
       process_queue
    end
@@ -86,15 +90,30 @@ class NTP::Server::Base
 
    def send_gap gap
       begin
-         self.gap_writer.puts(gap)
+         self.command_writer.puts(gap)
       rescue Errno::EPIPE
          # TODO check and restore child server part
       end
-      self.gap_writer.sync
+      self.command_writer.sync
       Process.kill("USR1", self.pid)
-      Process.setpriority(Process::PRIO_PROCESS, self.pid, 0)
-      Process.setpriority(Process::PRIO_PROCESS, Process.pid, 19)
-#      Thread.new { $stderr.puts "#{gap.inspect}>" }
+      if ! wait_answer
+         Kernel.puts "failed to update gap"
+         raise
+      end
+   end
+
+   def wait_answer
+      begin
+         Timeout.timeout(5) do
+            begin
+               self.answer_reader.sync
+               self.answer_reader.read_nonblock(1024)
+            rescue IO::EAGAINWaitReadable
+               retry
+            end
+         end
+      rescue Timeout::Error
+      end
    end
 
    # only used for practing the cukes

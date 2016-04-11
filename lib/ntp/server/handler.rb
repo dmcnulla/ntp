@@ -33,6 +33,14 @@ module NTP::Server::Handler
       NTP::Server::Handler
    end
 
+   def self.writer
+      @@writer
+   end
+
+   def self.writer= writer
+      @@writer = writer
+   end
+
    def self.reader
       @@reader
    end
@@ -64,11 +72,17 @@ module NTP::Server::Handler
       retry
    end
 
+   def self.send_to_base answer
+      self.writer.puts(answer)
+      self.writer.sync
+   end
+
    private
 
    def self.included klass
       Signal.trap("USR1") do
          update_gap
+         send_to_base "ok #{gap}"
       end
    end
 end

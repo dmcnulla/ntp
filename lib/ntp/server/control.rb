@@ -70,7 +70,7 @@ class NTP::Server::Control
    end
 
    def initialize
-      @client_out = Fifo.new('ntp-mock-server-in', :w, :nowait)
-      @client_in = Fifo.new('ntp-mock-server-out', :r, :nowait)
+      @client_out = Fifo.new(Dir.tmpdir + '/ntp-mock-server-in', :w, :nowait)
+      @client_in = Fifo.new(Dir.tmpdir + '/ntp-mock-server-out', :r, :nowait)
    end
 end

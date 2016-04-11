@@ -50,7 +50,6 @@ module NTP::Server::Handler
    end
 
    def self.gap= gap
-      Thread.new { $stderr.puts "#>#{gap.inspect}" }
       @@gap = gap.to_f
    end
 

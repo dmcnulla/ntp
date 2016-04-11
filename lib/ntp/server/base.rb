@@ -118,8 +118,10 @@ class NTP::Server::Base
          begin
             self.answer_reader.sync
             self.answer_reader.read_nonblock(1024)
-         rescue ::IO::EAGAINWaitReadable
+         rescue ::IO::WaitReadable, ::IO::EAGAINWaitReadable
+            ::IO.select([self.answer_reader])
             retry
+         rescue ::EOFError
          end
       end
    end

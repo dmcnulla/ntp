@@ -68,7 +68,8 @@ module ::NTP::Server::Handler
    def self.update_gap
       self.reader.sync
       self.gap = self.reader.read_nonblock(1024)
-   rescue ::IO::EAGAINWaitReadable
+   rescue ::IO::WaitReadable, ::IO::EAGAINWaitReadable
+      ::IO.select([self.reader.sync])
       retry
    end
 

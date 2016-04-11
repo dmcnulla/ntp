@@ -1,5 +1,10 @@
 require 'net/ntp'
 
+# w/a for older version of ruby below 2.1.0
+if ! ::IO.const_defined?(:EAGAINWaitReadable)
+   class ::IO::EAGAINWaitReadable; end
+end
+
 module NTP
    Net::NTP::STRATUM.merge!( { 16 => 'non-synchronized' } )
 

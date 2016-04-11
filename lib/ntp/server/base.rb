@@ -5,8 +5,9 @@ class NTP::Server::Base
        :command_reader, :command_writer, :answer_reader, :answer_writer
 
    def initialize(port = 123)
-      self.pipe_in = Fifo.new(Dir.tmpdir + '/ntp-mock-server-in', :r, :nowait)
-      self.pipe_out = Fifo.new(Dir.tmpdir + '/ntp-mock-server-out', :w, :nowait)
+      self.pipe_in = ::Fifo.new(Dir.tmpdir + '/ntp-mock-server-in', :r, :nowait)
+      self.pipe_out = ::Fifo.new(Dir.tmpdir + '/ntp-mock-server-out', :w,
+         :nowait)
       self.host = 'localhost'
       self.port = port
       (self.command_reader, self.command_writer) = IO.pipe
@@ -18,12 +19,13 @@ class NTP::Server::Base
    # runs the server
    def start
       self.pid = fork do
-        self.command_writer.close
-        self.answer_reader.close
-        self.handler.reader = self.command_reader
-        self.handler.writer = self.answer_writer
-        EventMachine::run do
-          EventMachine::open_datagram_socket self.host, self.port, self.handler
+         self.command_writer.close
+         self.answer_reader.close
+         self.handler.reader = self.command_reader
+         self.handler.writer = self.answer_writer
+         ::EventMachine::run do
+            ::EventMachine::open_datagram_socket self.host, self.port,
+               self.handler
         end
       end
       self.command_reader.close
@@ -34,7 +36,7 @@ class NTP::Server::Base
 
    # returns handler constant
    def handler
-       NTP::Server::Handler
+      ::NTP::Server::Handler
    end
 
    private
@@ -51,11 +53,14 @@ class NTP::Server::Base
          when /status/
             self.pipe_out.puts(status)
          when /time/
-            /time (?<time>.*)/ =~ message
+            /time (?<time_string>.*)/ =~ message
             begin
-               change_time(Time.parse(time))
-            rescue ArgumentError
-               puts "can't set invalid time"
+               time = Time.parse(time_string)
+            rescue ::ArgumentError => e
+               puts("can't set invalid time in message: #{message} by " +
+                  "#{e.message}")
+            else
+               change_time(time)
             end
          when /reset/
             reset
@@ -72,12 +77,12 @@ class NTP::Server::Base
 
    # sets a new time for the NTP server to base future responses
    def change_time(new_time)
-      send_gap(new_time.utc - Time.now.utc)
+      update_gap(new_time.utc - Time.now.utc)
    end
 
    # sets the time to current time to base future responses
    def reset
-      send_gap(0)
+      update_gap(0)
    end
 
    def status
@@ -88,31 +93,34 @@ class NTP::Server::Base
       Kernel.puts *args
    end
 
+   def update_gap gap
+      send_gap(gap)
+      wait_answer
+   rescue ::Timeout::Error
+      retry
+   rescue ::NameError
+      Kernel.puts IO.constants.inspect
+      retry
+   end
+
    def send_gap gap
       begin
          self.command_writer.puts(gap)
-      rescue Errno::EPIPE
+      rescue ::Errno::EPIPE
          # TODO check and restore child server part
       end
       self.command_writer.sync
       Process.kill("USR1", self.pid)
-      if ! wait_answer
-         Kernel.puts "failed to update gap"
-         raise
-      end
    end
 
    def wait_answer
-      begin
-         Timeout.timeout(5) do
-            begin
-               self.answer_reader.sync
-               self.answer_reader.read_nonblock(1024)
-            rescue IO::EAGAINWaitReadable
-               retry
-            end
+      ::Timeout.timeout(5) do
+         begin
+            self.answer_reader.sync
+            self.answer_reader.read_nonblock(1024)
+         rescue ::IO::EAGAINWaitReadable
+            retry
          end
-      rescue Timeout::Error
       end
    end
 

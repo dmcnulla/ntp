@@ -50,7 +50,8 @@ module NTP::Server::Handler
    end
 
    def self.gap= gap
-      @@gap = gap
+      Thread.new { $stderr.puts "#>#{gap.inspect}" }
+      @@gap = gap.to_f
    end
 
    def self.gap
@@ -59,7 +60,7 @@ module NTP::Server::Handler
 
    def self.update_gap
       self.reader.sync
-      self.gap = self.reader.read_nonblock(1024).to_f
+      self.gap = self.reader.read_nonblock(1024)
    rescue IO::EAGAINWaitReadable
       retry
    end

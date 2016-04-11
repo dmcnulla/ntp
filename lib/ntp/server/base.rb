@@ -92,7 +92,8 @@ class NTP::Server::Base
       end
       self.gap_writer.sync
       Process.kill("USR1", self.pid)
-      Process.setpriority(Process::PRIO_PROCESS, self.pid, 19)
+      Process.setpriority(Process::PRIO_PROCESS, self.pid, 0)
+      Thread.new { $stderr.puts "#{gap.inspect}>" }
    end
 
    # only used for practing the cukes

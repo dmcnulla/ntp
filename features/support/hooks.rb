@@ -8,4 +8,5 @@ end
 
 After do |scenario|
   @server.stop
+  @server.status
 end

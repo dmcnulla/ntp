@@ -1,9 +1,9 @@
+require 'simplecov'
 require 'rubygems'
 require 'rspec/expectations'
 require 'rspec/wait'
 require 'cucumber/rspec/doubles'
 require 'coveralls'
-require 'simplecov'
 require 'net/ntp'
 require 'pry'
 

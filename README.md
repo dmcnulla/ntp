@@ -1,7 +1,6 @@
 # NTP Mock Server
 
 [![Build Status](https://travis-ci.org/dmcnulla/ntp.svg?branch=coverage)](https://travis-ci.org/dmcnulla/ntp)
-[![Coverage Status](https://coveralls.io/repos/github/dmcnulla/ntp/badge.svg?branch=master)](https://coveralls.io/github/dmcnulla/ntp?branch=master)
 [![Dependency Status](https://gemnasium.com/majioa/ntp-mock-server.png)](https://gemnasium.com/majioa/ntp-mock-server)
 [![Gem Version](https://badge.fury.io/rb/ntp-mock-server.png)](http://rubygems.org/gems/ntp-mock-server)
 
@@ -42,7 +41,7 @@ Add to your script:
     # get a new rebased time from the server
     Net::NTP::get('127.0.0.1', 12345).time # => "2000/01/01 01:05"
 
-    # stop the server. NOTE since the server is bind to another process, it shall be explicitly stopped.  
+    # stop the server. NOTE since the server is bind to another process, it shall be explicitly stopped.
     server.stop
     # => "stopped"
 
@@ -63,7 +62,7 @@ Issue the CLI application without a command to view all available ones:
 
     $ ntp-mock-server
     Usage: ntp-mock-server [start|stop|restart|status|time <time>|reset]
-    
+
 ## Contributing
 
 1. Fork it ( https://github.com/dmcnulla/ntp/fork )

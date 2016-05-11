@@ -1,4 +1,4 @@
-Before do |scenario|
+Before('@ntp') do |scenario|
   @server = NTP::Server::Control.new
   @server.start(SERVER_PORT)
   begin
@@ -6,6 +6,7 @@ Before do |scenario|
   end until /listen/ =~ status
 end
 
-After do |scenario|
+After('@ntp') do |scenario|
   @server.stop
+  @server.status
 end

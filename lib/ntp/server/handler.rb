@@ -1,7 +1,7 @@
-module NTP::Server::Handler
+module ::NTP::Server::Handler
    def make_response request, receive_time
       time = ::Time.now + self.handler.gap
-      response = NTP::Response.new
+      response = ::NTP::Response.new
       response.leap_indicator = 'no warning'
       response.version_number = request.version_number
       response.mode = 'reserved for private use'
@@ -9,7 +9,7 @@ module NTP::Server::Handler
       response.poll_interval = 6
       response.precision = 0
       response.root_delay = request.timestamp.time - receive_time
-      response.root_dispersion = NTP::Time.new(0)
+      response.root_dispersion = ::NTP::Time.new(0)
       response.reference_clock_identifier = '127.0.0.1'
       response.reference_timestamp = time
       response.originate_timestamp = self.handler.origin_time
@@ -21,7 +21,7 @@ module NTP::Server::Handler
 
    def receive_data data
       receive_time = ::Time.now
-      request = NTP::Request.parse( data )
+      request = ::NTP::Request.parse( data )
       response = make_response( request, receive_time )
       response.send do |data|
          # Kernel.puts data.unpack("C*").map{|x| sprintf "%.2x", x}.join
@@ -30,7 +30,15 @@ module NTP::Server::Handler
    end
 
    def handler
-      NTP::Server::Handler
+      ::NTP::Server::Handler
+   end
+
+   def self.writer
+      @@writer
+   end
+
+   def self.writer= writer
+      @@writer = writer
    end
 
    def self.reader
@@ -50,7 +58,7 @@ module NTP::Server::Handler
    end
 
    def self.gap= gap
-      @@gap = gap
+      @@gap = gap.to_f
    end
 
    def self.gap
@@ -59,16 +67,23 @@ module NTP::Server::Handler
 
    def self.update_gap
       self.reader.sync
-      self.gap = self.reader.read_nonblock(1024).to_f
-   rescue IO::EAGAINWaitReadable
+      self.gap = self.reader.read_nonblock(1024)
+   rescue ::IO::WaitReadable, ::IO::EAGAINWaitReadable
+      ::IO.select([self.reader.sync])
       retry
+   end
+
+   def self.send_to_base answer
+      self.writer.puts(answer)
+      self.writer.sync
    end
 
    private
 
    def self.included klass
-      Signal.trap("USR1") do
+      ::Signal.trap("USR1") do
          update_gap
+         send_to_base "ok #{gap}"
       end
    end
 end

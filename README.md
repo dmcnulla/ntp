@@ -42,7 +42,7 @@ Add to your script:
     # get a new rebased time from the server
     Net::NTP::get('127.0.0.1', 12345).time # => "2000/01/01 01:05"
 
-    # stop the server. NOTE since the server is bind to another process, it shall be explicitly stopped.  
+    # stop the server. NOTE since the server is bind to another process, it shall be explicitly stopped.
     server.stop
     # => "stopped"
 
@@ -63,7 +63,7 @@ Issue the CLI application without a command to view all available ones:
 
     $ ntp-mock-server
     Usage: ntp-mock-server [start|stop|restart|status|time <time>|reset]
-    
+
 ## Contributing
 
 1. Fork it ( https://github.com/dmcnulla/ntp/fork )

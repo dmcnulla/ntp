@@ -25,14 +25,18 @@ Gem::Specification.new do |s|
    s.extra_rdoc_files  = [ 'README.md', 'LICENSE.txt' ] | `find html/ 2>/dev/null`.split( "\n" )
 
    s.add_development_dependency 'bundler', '~> 1.5'
-   s.add_development_dependency 'pry', '~> 0.10.3'
    s.add_development_dependency 'cucumber', '~> 2.3.3'
    s.add_development_dependency 'rake', '~> 11.1'
+   s.add_development_dependency 'rspec-expectations', '~> 3.4.0'
+   s.add_development_dependency 'rspec-wait', '~> 0.0.8'
+   s.add_development_dependency 'poltergeist', '~> 1.9'
+   s.add_development_dependency 'rack-test', '~> 0.6'
 
    s.add_dependency 'eventmachine', '~> 1.2.0'
    s.add_dependency 'ruby-fifo', '~> 0.1.0'
    s.add_dependency 'mkfifo', '~> 0.1.1'
    s.add_dependency 'net-ntp', '~> 2.1.3'
+   s.add_dependency 'sinatra'
 
    s.required_rubygems_version = '>= 1.6.0'
    s.required_ruby_version = '>= 1.9.3' ; end
